@@ -10,6 +10,7 @@ import UIKit
 
 class TableViewController: UITableViewController, ButtonCellDelegate {
 
+    var expandedIndexPaths: [NSIndexPath] = []
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -28,6 +29,10 @@ class TableViewController: UITableViewController, ButtonCellDelegate {
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 99
     }
+    
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return expandedIndexPaths.contains(indexPath) ? 100 : 44
+    }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("ButtonCell", forIndexPath: indexPath) as! ButtonCell
@@ -43,23 +48,13 @@ class TableViewController: UITableViewController, ButtonCellDelegate {
     // MARK: - ButtonCellDelegate
     
     func cellTapped(cell: ButtonCell) {
-        self.showAlertForRow(tableView.indexPathForCell(cell)!.row)
+        let indexPath = tableView.indexPathForCell(cell)
+        if expandedIndexPaths.contains(indexPath!) {
+            expandedIndexPaths.removeAtIndex(expandedIndexPaths.indexOf(indexPath!)!)
+        } else {
+            expandedIndexPaths.append(indexPath!)
+        }
+        tableView.reloadRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
     }
-    
-    // MARK: - Extracted method
-    
-    func showAlertForRow(row: Int) {
-        let alert = UIAlertController(
-            title: "BEHOLD",
-            message: "Cell at row \(row) was tapped!",
-            preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Gotcha!", style: UIAlertActionStyle.Default, handler: { (test) -> Void in
-            self.dismissViewControllerAnimated(true, completion: nil)
-        }))
-        
-        self.presentViewController(
-            alert,
-            animated: true,
-            completion: nil)
-    }
+
 }
