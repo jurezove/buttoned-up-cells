@@ -10,7 +10,7 @@ import UIKit
 
 class TableViewController: UITableViewController, ButtonCellDelegate {
 
-    var expandedIndexPaths: [NSIndexPath] = []
+    var expandedRow: NSIndexPath?
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -31,7 +31,7 @@ class TableViewController: UITableViewController, ButtonCellDelegate {
     }
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return expandedIndexPaths.contains(indexPath) ? 100 : 44
+        return expandedRow == indexPath ? 100 : 44
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -48,13 +48,13 @@ class TableViewController: UITableViewController, ButtonCellDelegate {
     // MARK: - ButtonCellDelegate
     
     func cellTapped(cell: ButtonCell) {
-        let indexPath = tableView.indexPathForCell(cell)
-        if expandedIndexPaths.contains(indexPath!) {
-            expandedIndexPaths.removeAtIndex(expandedIndexPaths.indexOf(indexPath!)!)
-        } else {
-            expandedIndexPaths.append(indexPath!)
-        }
-        tableView.reloadRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
+      let indexPath = tableView.indexPathForCell(cell)
+      if indexPath == expandedRow {
+        expandedRow = nil
+      } else {
+        expandedRow = indexPath
+      }
+      tableView.reloadRowsAtIndexPaths([indexPath!], withRowAnimation: .Automatic)
     }
 
 }
